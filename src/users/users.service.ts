@@ -28,6 +28,18 @@ export class UsersService {
       password: hashedPassword,
     });
 
-    return newUser.save(); // Saves to MongoDB
+    return newUser.save();
+  }
+
+    async findByEmail(email: string): Promise<User | null> {
+      return this.userModel.findOne({ email }).exec();
+    }
+
+    async validateUserPassword(email: string, plainPassword: string): Promise<User | null> {
+      const user = await this.findByEmail(email);
+      if (user && await bcrypt.compare(plainPassword, user.password)) {
+        return user;
+      }
+    return null;
   }
 }
